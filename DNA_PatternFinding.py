@@ -4,7 +4,7 @@
 def PatternCount(Text, Pattern):
     count = 0
     window_len = len(Pattern)
-    for i in range (0,len(Text)-window_len):
+    for i in range (0,len(Text)-window_len+1):
      window_act = Text[i:i+window_len]
      if window_act == Pattern:
       count += 1
@@ -13,16 +13,16 @@ def PatternCount(Text, Pattern):
 txt1 = "GGTATTGTCTGAGAGATTGTCTGGTTTGTCTGTTCCGTGTTTGTCTGTTGTCTGATTGTCTGTTGTTTGTCTGTTGTCTGCGATTGTCTGTTGTCTGATTGTCTGACCATTGTCTGGTTGTCTGATACGGGTTTGTCTGTGTGTTGTCTGTTTGTCTGCGACGGTGTTGTCTGTTGTCTGCAATTGTCTGTTCTTGTCTGTGGTCTTGTCTGGTTGTCTGCTTTATGGGTGTTGTCTGTTGTCTGACACTTTGTCTGCTTGTCTGTTGTCTGTTGTCTGACTTGTCTGAATTGTCTGATTCTTGTCTGCCATCCCGAACATTGTCTGATTGTCTGCATTGTCTGTTGTCTGTTGTCTGATTGTCTGAGTTTGTCTGCTAGTTGTCTGATCGTTTGTCTGGTTGTCTGTTTGTCTGCTTAAGATTTGTCTGAATTGTCTGTTTGTCTGAGCTTGTCTGTTGTCTGTTGTCGCTTGTCTGCGTTGTCTGTTGTCTGGAGCCATTGTCTGGTTGCAGACCCGAAGGTTGTCTGTTGTCTGACTGGTTTGTCTGGTTTGTCTGATTGTTGTCTGAAATCAGTGCCACTAGCTTGTCTGTTGTCTGATTAATTGTCTGTACAAGTTTGTCTGTTTGTCTGGCCCTTGTCTGATTGTCTGGTTGTCTGAAGAATCTGTGGTTGTCTGCTTCCTGGTTGTCTGTTGTCTGGGCCACGTTGTCTGCTTTGTCTGCCGATTGTCTGATTGTCTGCTGTTGTCTGGGTTGTCTGCGATTGTCTGTTGTCTGTTGTCTGTAGTTGTCTGTTGTCTGGTGTTTGTCTGGCCTTGTCTGGCTTGTCTGTTGTCTGCGCTTGTCTGTAGATTGTCTGCAACCCTTTTGTCTGGCGTTGTCTGTGTACTTTGTCTGTTGTCTGTTTGTCTGACTTGTCTGTTGTCTGTTAATCCTTTGTCTGGAGTTGTCTGGTTGTCTG"
 ptrn = "TTGTCTGTT"
 
-print(f'The pattern {ptrn} is repeated {PatternCount(txt1,ptrn)} times in the given sequence')
+# print(f'The pattern {ptrn} is repeated {PatternCount(txt1,ptrn)} times in the given sequence')
 #%%
 # 2. Counting the frequency of patterns inside a sequence
 
 txt1 = "CCCTCGGCCCCTCGGCTCATTCTACAATTTCGAGATCATACCTCATTCTAGATCATACCTCATTCTATGCCCGAACCCTCGGCGATCATACCTGCCCGAACAATTTCGATGCCCGAACCCTCGGCCAATTTCGATCATTCTAGATCATACCTGCCCGAACCCTCGGCCAATTTCGATGCCCGAAGATCATACCCAATTTCGATGCCCGAATCATTCTACAATTTCGATCATTCTACAATTTCGAGATCATACCTGCCCGAACAATTTCGACAATTTCGACCCTCGGCTCATTCTAGATCATACCTCATTCTATGCCCGAATCATTCTATGCCCGAATCATTCTACAATTTCGACAATTTCGACCCTCGGCTGCCCGAACAATTTCGACCCTCGGCTGCCCGAACAATTTCGACAATTTCGAGATCATACCTGCCCGAAGATCATACCCAATTTCGATGCCCGAATGCCCGAACAATTTCGACAATTTCGACAATTTCGACAATTTCGACAATTTCGACCCTCGGCGATCATACCGATCATACCTGCCCGAACCCTCGGCCCCTCGGCTGCCCGAAGATCATACCTCATTCTAGATCATACCCAATTTCGAGATCATACCGATCATACCTCATTCTATGCCCGAATGCCCGAAGATCATACCTCATTCTACCCTCGGCCCCTCGGCTCATTCTATGCCCGAAGATCATACCCCCTCGGCCAATTTCGATGCCCGAACAATTTCGACAATTTCGACCCTCGGCCCCTCGGCTCATTCTAGATCATACCCCCTCGGCGATCATACCTCATTCTACAATTTCGATCATTCTACCCTCGGCTCATTCTATGCCCGAATCATTCTACAATTTCGACAATTTCGATCATTCTATCATTCTATCATTCTACCCTCGGCGATCATACCCCCTCGGCTGCCCGAACCCTCGGCTCATTCTATGCCCGAA"
 
-def MaxPatternFreq(sequence, k):
+def MaxPatternFreq(sequence, k, get_max=None):
     freq_map = {}
     len_pattern = k
-    for i in range(0,len(sequence)-len_pattern):
+    for i in range(0,len(sequence)-len_pattern+1):
       window_actual = sequence[i:i+len_pattern]
       if window_actual in freq_map:
         freq_map[window_actual] += 1
@@ -31,20 +31,22 @@ def MaxPatternFreq(sequence, k):
 
     patterns = list(freq_map.keys())
     frequencies = list(freq_map.values())
-    
-    max_actual = frequencies[0]
-    for i in range(0,len(frequencies)):
-        if max_actual < frequencies[i]:
-           max_actual = frequencies[i]
+    if get_max==True:
+        max_actual = frequencies[0]
+        for i in range(0,len(frequencies)):
+            if max_actual < frequencies[i]:
+               max_actual = frequencies[i]
 
-    max_pattern_freq = {}
-    for i in range(0,len(frequencies)):
-        if frequencies[i] == max_actual:
-           max_pattern_freq[patterns[i]]=frequencies[i]
+        max_pattern_freq = {}
+        for i in range(0,len(frequencies)):
+            if frequencies[i] == max_actual:
+               max_pattern_freq[patterns[i]]=frequencies[i]
 
-    return max_pattern_freq
+        return max_pattern_freq
+    else:
+       return freq_map
 
-print(MaxPatternFreq(txt1,13))
+# print(MaxPatternFreq(txt1,13,True))
 
 
 # %%
@@ -62,7 +64,7 @@ def get_complementary_sequence(dna_template_sequence):
 
     return reversed_dna_complementary_sequence
 
-print(get_complementary_sequence(sequence1))
+# print(get_complementary_sequence(sequence1))
 
 # %%
 # 4. Pattern finding for an specific pattern on a genome
@@ -74,12 +76,50 @@ pattern3 = 'ATGATCAAG'
 def pattern_finding(pattern, dna_sequence):
     pattern_len = len(pattern)
     patternFinding_dna_index = []
-    for i in range(0,len(dna_sequence)):
+    for i in range(0,len(dna_sequence)-pattern_len+1):
        actual_window = dna_sequence[i:i+pattern_len]
        if actual_window == pattern:
           patternFinding_dna_index.append(i)
     space_separated_string = ' '.join(str(element) for element in patternFinding_dna_index)
     return space_separated_string
 
-print(pattern_finding(pattern2,sequence2))
+# print(pattern_finding(pattern2,sequence2))
+# %%
+#Clump finding algorithm
+#Genome sequence -> the dna sequence where we want to find clumps
+#k -> lenght of the k-mers to find
+#L -> lenght of the window
+#t -> threshold of how many k-mears should form a clump in the sequence.
+
+import pandas as pd
+from tqdm import tqdm
+data = pd.read_csv('./Data/EColi_genome.txt',delimiter='\t',header=None)
+sequence = data.values.flatten()[0]
+
+# sequence = 'TCCACCGTGACCTCTGCAAATTATTATAGCTCTGCAAATTTAACCTTGGTGATCAGGAAGCGAAGCGCGAAGCGAATGGTACTGTTTTACACGAGACCCCGTTCCCATCTCCCCGGTGTATTCTGCGAAATACAAGCGGCGAGCGCGGCTGCCCGAAAACCAGATCAATCTATGGCCAGGTAGCCGGCTTGCCGTTGCCGCACAGGCAAGTCCATACTTTAGGCCGTCGCGATCACCAGTCTGTACGCGATATGGAAAGGTAAATCGTTAAACCTGCTAGCGGATCTATTTTTGCGATGATCTATTCACTGTAAAATGCTGCGCAGCCAATAAATTGGGACGCGTAATAATTGCCCCACACGTTGGCTACCGCGTATCGCCAGATCAGCTCTTTGTGCAATTTGCTCCTCTTCAACACTCATGACGTGCGCGCTTATCTCATCGCGCACCTTTATTAAGGCCTGCTAGTAAGCAAGCGCTGGCAACTAGGGAAGGGCTTCTTGCGGCACAAGATACGTCGCAGTCTGCATAGATCCCCCCCTGATGCTCTGATGTCGATCTGATGTCGGGTCCGCACATGTCGCCAATCGCCGAGGTTGTCAGGCATCCTTAAAACATTCCCCCTAAGTTCGCAGGCCTGTTGAGAGCGATGGGTTTAATCCGGATGGCTTGTTGGAGAAGGAGGAGCCGTTAGCTGTGGAGGCTAGCGTTCGCTGTTCGCTGGCTGGCCGCTGGCCACACTGCCACACACACACTGCCAGTTCCGCTATCCCTGATTAAGTCCGTTACTTCACACTTTATTACGTGCCTGATAACAGCTATGTTAGACTAGATAAGACTGACACTGACCGCACACACTGACCGCGTCGGTATTGAACGCATTTACCTTGGCGGAAGAACATTACCTCATATTAAGGAATAAAGCGCTCCCAGACCAGCGTACTGGGCCTGGGAGCGCCTATTCTAAGTAAAACGTATCCGAATTGTGTGTTGTTCTACGAGGAACCGGGCAGCCCGTCCTAGTCTAGAGAGTGTGCACCAGGATGTTGGCTCATACTAACCCTAATGCCTGCCTGCCTCGGCCCGCCTCGGCGCCTGAGCCCTTGTGGACTTGCTGTGTTAATACCCGGCCGCAATCGTCAAAAGGGCCTCATTGTCGGGATGACAGGATCTTCCGATCCTAGCTTATCGGCCTAACCTACGACAAGTTGTATGGACTGGTAATCTGACGTGGAGTGGCGTCGGCTTCTTCACTGGCGACTTCACTGACTGTCTTGCAGTGTTAATCTACCTCCTTCGGTGCTACGTCAGGTGATGGTGTGCTGTTGGGACAATGTTCTCCGCACAAATGCCGAACGGGAGGTGAGTAACTTTAACAACTTTAACACAACAACCTACAAATTCACTTACGATGGTCTTAAACAAACACTACAACTAGCGCAAAAAACTGTCAGGAATCCTGGAGTCTTTAGGCGGTACATAAGTACAATATTTCGAGGAATGGCCGGCGCAGGACCACGATAGGCTCGGAGCGACGTCTTTAGTAACGCACCACCCCGAACTTTATCGATGCAATTTAGCAGTGTTGATGTCATTTAGCACGCTGAGTCTGCGTTTATACAAACGGGGACGGATCCGGGCACCAACTGTAGGATGTATCACTGACTTACGATCCTAGACCCCTACGGCACAAGCTTTTCGGCTTTTCGGCTTTTCGGCTTTTCGGCTTTTCGGCTTTTCG'
+k = 9
+L = 500
+t = 3
+
+def sequence_clump_finder(genome_sequence, k, L, t):
+    clump_patterns = {}
+    for i in tqdm(range(0,len(genome_sequence)-L+1),'Processing: '):
+        actual_genome_window = genome_sequence[i:i+L]
+        frequnet_patterns_window = MaxPatternFreq(actual_genome_window,k)
+        frequencies = list(frequnet_patterns_window.values())
+        patterns = list(frequnet_patterns_window.keys())
+        for j in range(0,len(frequencies)):
+           pattern_actual = patterns[j]
+           if frequencies[j] >= t:
+                if pattern_actual in clump_patterns:
+                    clump_patterns[pattern_actual] += 1
+                else:
+                    clump_patterns[pattern_actual] = 1
+
+    return clump_patterns
+clumps = sequence_clump_finder(sequence,k,L,t)
+print(len(clumps))
+
+
+
 # %%
