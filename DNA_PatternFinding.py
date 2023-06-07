@@ -150,13 +150,14 @@ def skew_couinter_func(genome):
          skew_val.append(skew_i)
 
     plt.plot(np.arange(len(genome)+1),skew_val,'-o')
-    plt.xlabel('Genome position') 
+    plt.xlabel('Genome position')
     plt.ylabel('skew (G-C)')
     plt.show()
     return (skew_val)
 
 data = pd.read_csv('./Data/dataset_7_10.txt',delimiter='\t',header=None)
 test_genome = data.values.flatten()[0]
+test_genome = 'GATACACTTCCCGAGTAGGTACTG'
 genome_skew = skew_couinter_func(test_genome)
 
 #We now that the ori of the genome should be on the more negative difference of G-C. Let's find the minimum
@@ -184,7 +185,7 @@ def calculate_hamming_distance(string1, string2):
         return hamming_dist
     except:
        print('String1 and string2 do not have the same lenght')
-       
+
 
 string1_test = 'GGGCCGTTGGT'
 string2_test = 'GGACCGTTGAC'
@@ -193,7 +194,10 @@ sequence_test1 = 'CCTAACCGTGAGGAATACTGAATACCTGGGTCTCCCCTGAGGGCGTAGCAGTATGTCTCATG
 
 sequence_test2 = 'TGCCCGCGTAATTTTCCTCCGAGGTGACGTCCATAAGTGGTATGCTAATCAGACCGATGGGCCTGCAGGCGCGTTGCTCCTTTCAGTCCACATCCCTTACATTATAGACGCGACGTACCGGGACGTGGCGCTGAAGTGATGAAGGAAGCACACTGCTTATAATCCGAAAGTAGATGCGCTGTCATGTGAAAAGAACGGCTGGGTGGAGTAATATTGGCGTATGTGTTAGTGACTTATCTCAAATAAAACCGCCGTTGCCAACTGCTAGCAATAACAGTCTTCTGCCTGATATCGCCATCATCAAAATATACATACGTCGTACTAACCGCGAAACGTACGCATAGTGATAAGTTTTTCGACGCCAGCTAGCTATCCCTTCATAGCTGTATGCCGTCAACGTAGGTGAAGATAGTTGCACATGTAGAACACCCCAAAGCATGACGAACGTGCCCGTTTCTCAGCACATATACGGCCAATCGAACGACAGAGGTGAGTAGTACGCGTCCAGGAGATCGGCGGAACCCAAGGAGGGTCATATAGAGGGGGTGAGTTCTGGTGGACTTCATATCGTCTAAGGAGCTATAGCTAAAAAATGTTCATAAGGGGCGCTATGTGCACTACACTTCTAGGATTGCAATGCTGCGCGTTTAAGGGACTTTATTTATGGTAACTGGTCGTCGGCGCTGAGCTAAGATTGTGTAGAGTTAGACAGGCACGATATCGGGGTATAACCCTAATGACTGAAAATTACAGCCTTTCATACGTTCACGCGCGTGCGCGCCTTTTTAGCTCCAGTTAGTCCTCCTATGCTCAGCGAAACAGCACCGAGGTGGCTCAGAAAATGTGCCGCATGGCTCCTTGTTAGTTGTAGCTGGTATACAATGGCGTTGAAGGAGATTGCCCGCGCAGTTGTAGAATGAATCGTGTCTGCGCAATGTTCCTGACTGTTCGTTTTCAGTGAGTGCGCGTCAGAGGCTTGGGGTACAGGTAGTTGACGTACCTAATACAACAACGCGCCATGTCTGTTGCAAGGA'
 
-print(calculate_hamming_distance(sequence_test1,sequence_test2))
+test1 = 'CTACAGCAATACGATCATATGCGGATCCGCAGTGGCCGGTAGACACACGT'
+test2 = 'CTACCCCGCTGCTCAATGACCGGGACTAAAGAGGCGAAGATTATGGTGTG'
+
+print(calculate_hamming_distance(test1,test2))
 
 
 #%%//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +227,7 @@ sequence_test = 'TTTAGAGCCTTCAGAGG'
 d_test = 2
 pattern_test = 'GAGG'
 
-#Excercise 1 
+#Excercise 1
 import pandas as pd
 data = pd.read_csv('./Data/dataset_8_10.txt',delimiter='\t',header=None)
 sequence = data.values.flatten()[0]
@@ -235,7 +239,12 @@ sequence2 = 'GGTCCTCACAAGCACATGCCTTGTGGGGATAACAGTGTCGCCATTTCTAGTCGGAGGTATATGGAGT
 pattern2 = 'GTATTTG'
 d2 = 3
 
-freq_pattern_index = aprox_pattern_matching(sequence2,pattern2,d2)
+#Test
+test1 = 'TACGCATTACAAAGCACA'
+pattern_test1 = 'AA'
+test_d = 1
+
+freq_pattern_index = aprox_pattern_matching(test1,pattern_test1,test_d)
 freq_patterns = len(freq_pattern_index)
 print(freq_pattern_index,freq_patterns)
 
@@ -246,17 +255,21 @@ print(freq_pattern_index,freq_patterns)
     pattern - sequence
     d - hamming distance max.
     Output: The collection of strings Neighbors(Pattern, d)
+    
 '''
+
+#By recursion
 def neighbors(pattern, d):
+    nucleotides = {'A','C','G','T'}
     if d == 0:
-       return pattern
+       return [pattern]
     if len(pattern)==1:
-       return {'A','C','G','T'}
+       return nucleotides
     neighborhood = []
     suffixNeighbors = neighbors(pattern[1:],d)
     for text in suffixNeighbors:
         if calculate_hamming_distance(pattern[1:],text)<d:
-            for nucleotide in 'ACTG':
+            for nucleotide in nucleotides:
                neighborhood.append(np.concatenate((nucleotide,text),axis=None))
         else:
            neighborhood.append(np.concatenate((pattern[0],text),axis=None))
@@ -267,36 +280,86 @@ def neighbors(pattern, d):
 
     return txt_neighborhood
 
-test1_pattern = 'ACG'
-d_test1 = 1
-print(neighbors(test1_pattern,d_test1))
+test1_pattern = 'AGGT'
+d_test1 = 0
+pattern_neighbors = neighbors(test1_pattern,d_test1)
+# space_separated_neighbors = ' '.join(str(element) for element in pattern_neighbors)
 
 
+test_pattern ='CCAGTCAATG' 
+d_test = 1
+pattern_neighbors = neighbors(test_pattern,d_test)
+
+print(pattern_neighbors)
 #%%//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # 9. Frequent Words with Mismatches Problem.
 
-def max_freq_patterns_hammimgd(sequence, k, d):
+def max_freq_patterns_missmatches(sequence, k, d):
     freq_map = {}
     len_pattern = k
+    max_patterns = []
     for i in range(0,len(sequence)-len_pattern+1):
-      window_actual = sequence[i:i+len_pattern]
-      if window_actual in freq_map:
-        freq_map[window_actual] += 1
-      else:
-        freq_map[window_actual] = 1 
-    patterns = list(freq_map.keys())
-    frequencies = list(freq_map.values())
-    
+        window_actual = sequence[i:i+len_pattern]
+        neighborhood = neighbors(window_actual,d)
+        for j in range(0,len(neighborhood)):
+            neighbor = neighborhood[j]
+            if neighbor in freq_map:
+               freq_map[neighbor] += 1
+            else:
+               freq_map[neighbor] = 1
+    m = max(freq_map.values())
+    for key_pattern in freq_map:
+        if freq_map[key_pattern] == m:
+           max_patterns.append(key_pattern)
+
+    return max_patterns
+
+test_sequence = 'CAGTGTTTGTTGGTTCAGCAGGGTTCAGAACCAGGGTTAACGGTTCAGAACCAGCAGAACAACGGTTCAGAACCAGCAGCAGGGTTCAGGGTTCAGCAGTGTTCAGAACCAGGGTTGGTTCAGAACAACCAGCAGCAGCAGCAGCAGCAGGGTTTGTTCAGGGTTCAGTGTTTGTTTGTTCAGCAGCAGTGTTAACCAGTGTTCAGCAGCAGCAGAACGGTTCAGCAGCAGTGTTGGTTAACAACAACCAGGGTTCAGCAGCAGCAGCAGGGTTCAGTGTTCAGAACAACCAGCAGGGTTCAGCAGCAGAACGGTTGGTTGGTTCAGTGTTGGTT'
+k_test = 6
+d_test = 2
+
+print(max_freq_patterns_missmatches(test_sequence,k_test,d_test))
 
 
-    max_actual = frequencies[0]
-    for i in range(0,len(frequencies)):
-        if max_actual < frequencies[i]:
-           max_actual = frequencies[i]  
-    max_pattern_freq = {}
-    for i in range(0,len(frequencies)):
-        if frequencies[i] == max_actual:
-           max_pattern_freq[patterns[i]]=frequencies[i]
 
-    return max_pattern_freq
+
+ #%%//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ # 9. Frequent Words with Mismatches and sequence reverse complement Problem.
+
+def max_freq_patterns_missmatches_reversecomplements(sequence, k, d):
+    freq_map = {}
+    len_pattern = k
+    max_patterns = []
+    for i in range(0,len(sequence)-len_pattern+1):
+        actual_pattern = sequence[i:i+len_pattern]
+        reverse_pattern = get_complementary_sequence(actual_pattern)
+        neighborhood_pattern = neighbors(actual_pattern,d)
+        neighborhood_reverse_pattern = neighbors(reverse_pattern,d)
+
+        for j in range(0,len(neighborhood_pattern)):
+            neighbor = neighborhood_pattern[j]
+            if neighbor in freq_map:
+               freq_map[neighbor] += 1
+            else:
+               freq_map[neighbor] = 1
+
+        for k in range(0,len(neighborhood_reverse_pattern)):
+            neighbor_ = neighborhood_reverse_pattern[k]
+            if neighbor_ in freq_map:
+               freq_map[neighbor_] += 1
+            else:
+               freq_map[neighbor_] = 1
+
+    m = max(freq_map.values())
+    for key_pattern in freq_map:
+        if freq_map[key_pattern] == m:
+           max_patterns.append(key_pattern)
+
+    return max_patterns
+
+test_sequence = 'ACTTCCTTCCTGAGAACTCTGAACTACTTCGACTGACTAGCTCGAACTGATCCTTCCTGAACTAGCCTCTCTACTGAAGCACTAGCGAACTGAGAAGCGAGACTTCCTACTAGCCTTCCTAGCTCGAACTTCTCCTAGCACTCTTCACTGATCACTTCCTCTTCAGCCTCTGAAGCAGCCTGAACTTCTCGAAGCAGCACTGATCGAAGCTCTCTC'
+k_test = 7
+d_test = 2
+
+print(max_freq_patterns_missmatches_reversecomplements(test_sequence,k_test,d_test))
 
