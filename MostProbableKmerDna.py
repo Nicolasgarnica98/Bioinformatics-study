@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
-#Most probable kmer on a string given a profile matrix of probabilities.
 
+#Most probable kmer on a string given a profile matrix of probabilities.
 def Profile_Most_Probable_kmer(dna_string,k,profile_matrix):
     '''''
     This function will calculate the most probable k-mer present on the dna sequence given a matrix of probabilities of nucleotide occurrence(profile)
@@ -37,6 +37,7 @@ profile_matrix = {'A':[0.303,0.227,0.273,0.333,0.212,0.273,0.242,0.182,0.227,0.1
                   'G':[0.227,0.212,0.273,0.227,0.288,0.303,0.227,0.258,0.227,0.333,0.227,0.258,0.318,0.167,0.212],
                   'T':[0.273,0.212,0.288,0.273,0.242,0.227,0.303,0.288,0.273,0.242,0.182,0.258,0.227,0.318,0.258]}
 
+#Hamming distance function
 def calculate_hamming_distance(string1, string2):
     hamming_dist = 0
     try:
@@ -47,8 +48,8 @@ def calculate_hamming_distance(string1, string2):
     except:
        print('String1 and string2 do not have the same lenght')
 
-#Greedy Motif Search algorithm
 
+#Greedy Motif Search algorithm
 def greede_motif_search(dna_array,k):
     '''''
     This algorithm will return the best motifs by trying all the possible profile matrix formed by the kmers in the dna strings.
@@ -61,10 +62,9 @@ def greede_motif_search(dna_array,k):
     def get_profile_matrix(motif_matrix, LaPlace_rule_succession = False):
         for i in range(len(motif_matrix)):
             motif_matrix[i] = list(motif_matrix[i])
-            
+
         motif_matrix = np.array(motif_matrix)
 
-         
         profile_matrix_dict = {'A':np.zeros(len(motif_matrix[0])),
                                'C':np.zeros(len(motif_matrix[0])),
                                'G':np.zeros(len(motif_matrix[0])),
@@ -91,6 +91,7 @@ def greede_motif_search(dna_array,k):
         profile_matrix = np.array([profile_matrix_dict['A'],profile_matrix_dict['C'],profile_matrix_dict['G'],profile_matrix_dict['T']])
         return profile_matrix_dict
 
+    #Calculate the profile matrix score
     def calculate_motif_matrix_score(motif_matrix, return_consensus_motif = None):
         motif_matrix_copy = motif_matrix
         for i in range(len(motif_matrix_copy)):
@@ -112,7 +113,7 @@ def greede_motif_search(dna_array,k):
         else:
             return score
     
-    #
+    #Main algoritm
     best_motifs = [dna_string[0:k] for dna_string in dna_array]
     for i in tqdm(range(0,len(dna_array[0])-k+1),'Analizing: '):
         kmer1 = dna_array[0][i:i+k]
